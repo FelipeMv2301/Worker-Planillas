@@ -7,11 +7,10 @@ services:
     restart: always
     env_file:
       - .env
-    # Se añade network_mode: bridge o una red compartida para comunicación entre contenedores
     networks:
       - planillas-network
     ports:
-      - "${WORKER_PORT:-8001}:8000"
+      - "${WORKER_PORT:-8001}:${WORKER_PORT:-8001}"
 
 networks:
   planillas-network:

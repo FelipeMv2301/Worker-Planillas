@@ -1,7 +1,7 @@
 # Imagen base liviana
 FROM python:3.10-slim
 
-# Evitar generación de archivos .pyc y habilitar salida de buffer (para logs inmediatos)
+# Evitar generación de archivos .pyc y habilitar salida de buffer
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
@@ -21,5 +21,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copiar código fuente
 COPY . .
 
-# El Worker corre en el loop de main.py
+# Exponer puertos para DigitalOcean
+EXPOSE 8001
+EXPOSE 8002
+
+# El Worker corre en el módulo app.main
 CMD ["python", "-m", "app.main"]

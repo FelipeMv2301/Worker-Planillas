@@ -15,6 +15,7 @@ logger = logging.getLogger("WorkerMain")
 # Crear aplicación FastAPI para Health Check
 app = FastAPI()
 
+@app.get("/")
 @app.get("/health")
 async def health_check():
     """
@@ -47,8 +48,8 @@ async def main():
     """
     logger.info("Worker-Planillas iniciando...")
     
-    # Ejecutamos el servidor web y el scheduler al mismo tiempo
-    config = uvicorn.Config(app, host="0.0.0.0", port=8000, log_level="warning")
+    # Ejecutamos el servidor web en el puerto configurado y el scheduler simultáneamente
+    config = uvicorn.Config(app, host="0.0.0.0", port=settings.WORKER_PORT, log_level="warning")
     server = uvicorn.Server(config)
     
     await asyncio.gather(
