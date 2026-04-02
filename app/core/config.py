@@ -16,10 +16,10 @@ class Settings(BaseSettings):
     INTERVAL_SYNC_RETIROS: int 
     
     # Parámetros extra
-    WOO_SYNC_DAYS: int = 2
+    WOO_SYNC_DAYS: int
    
-    #Puertos
-    WORKER_PORT: int = 8002
+    #Puertos (8080 es el estándar de DigitalOcean)
+    WORKER_PORT: int 
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

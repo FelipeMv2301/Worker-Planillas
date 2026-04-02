@@ -22,6 +22,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Exponer puertos para DigitalOcean
+EXPOSE 8080
 EXPOSE 8001
 EXPOSE 8002
 
