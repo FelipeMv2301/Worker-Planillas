@@ -26,10 +26,10 @@ class APIClient:
                 response.raise_for_status()
                 return response.json()
             except httpx.HTTPStatusError as e:
-                logger.error(f"Error HTTP en {endpoint}: {e.response.status_code} - {e.response.text}")
+                logger.error(f"Error HTTP en {url}: {e.response.status_code} - {e.response.text}")
                 raise
             except Exception as e:
-                logger.error(f"Error de conexión en {endpoint}: {str(e)}")
+                logger.error(f"Error de conexión en {url}: {type(e).__name__} - {str(e)}")
                 raise
 
     async def _get(self, endpoint: str, params: dict = None):
@@ -43,10 +43,10 @@ class APIClient:
                 response.raise_for_status()
                 return response.json()
             except httpx.HTTPStatusError as e:
-                logger.error(f"Error HTTP en {endpoint}: {e.response.status_code} - {e.response.text}")
+                logger.error(f"Error HTTP en {url}: {e.response.status_code} - {e.response.text}")
                 raise
             except Exception as e:
-                logger.error(f"Error de conexión en {endpoint}: {str(e)}")
+                logger.error(f"Error de conexión en {url}: {type(e).__name__} - {str(e)}")
                 raise
 
     @retry(
