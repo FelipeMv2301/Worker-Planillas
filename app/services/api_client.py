@@ -13,7 +13,7 @@ class APIClient:
     def __init__(self):
         settings = get_settings()
         self.base_url = settings.full_api_url
-        self.timeout = httpx.Timeout(30.0, connect=10.0)
+        self.timeout = httpx.Timeout(120.0, connect=10.0)
 
     async def _post(self, endpoint: str):
         """
