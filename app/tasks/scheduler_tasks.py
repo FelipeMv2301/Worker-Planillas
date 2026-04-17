@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 from app.services.api_client import APIClient
 from app.core.config import get_settings
 
@@ -61,3 +62,16 @@ async def sync_woo_recent_task():
         logger.info(f"[Woo] Sincronización masiva terminada. Procesados: {total}")
     except Exception as e:
         logger.error(f"Fallo sincronización masiva WooCommerce: {e}")
+
+async def sync_cotizaciones_task():
+    """
+    Tarea programada para cargar cotizaciones del día actual desde SAP.
+    """
+    hoy = datetime.now().strftime("%Y-%m-%d")
+    logger.info(f"Iniciando carga de cotizaciones para el día {hoy}...")
+    try:
+        result = await client.sync_cotizaciones(fecha_desde=hoy, fecha_hasta=hoy)
+        total = result.get('total_procesados', 0)
+        logger.info(f"[Cotizaciones] Sync completado. Procesadas: {total}")
+    except Exception as e:
+        logger.error(f"Fallo carga de cotizaciones: {e}")

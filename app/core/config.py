@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     INTERVAL_SYNC_EMAILS: int
     INTERVAL_SYNC_WOO_RECENT: int 
     INTERVAL_SYNC_RETIROS: int 
+    INTERVAL_SYNC_COTIZACIONES: int 
     
     # Parámetros extra
     WOO_SYNC_DAYS: int

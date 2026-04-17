@@ -15,14 +15,14 @@ class APIClient:
         self.base_url = settings.full_api_url
         self.timeout = httpx.Timeout(120.0, connect=10.0)
 
-    async def _post(self, endpoint: str):
+    async def _post(self, endpoint: str, json: dict = None):
         """
         Realiza una petición POST asíncrona al endpoint especificado.
         """
         url = f"{self.base_url.rstrip('/')}/{endpoint.lstrip('/')}"
         async with httpx.AsyncClient(timeout=self.timeout) as client:
             try:
-                response = await client.post(url)
+                response = await client.post(url, json=json)
                 response.raise_for_status()
                 return response.json()
             except httpx.HTTPStatusError as e:
@@ -108,3 +108,31 @@ class APIClient:
         Inicia la sincronización masiva de pedidos recientes desde WooCommerce.
         """
         return await self._get("/notificaciones-despacho/woocommerce/sincronizar", params={"dias": dias})
+
+    @retry(
+        stop=stop_after_attempt(3), 
+        wait=wait_exponential(multiplier=1, min=2, max=10),
+        before_sleep=before_sleep_log(logger, logging.WARNING),
+        reraise=True
+    )
+    async def send_billing_email(self, order_id: str):
+        """
+        Delega a la API-Planillas-1 el envío del correo de notificación de facturación (Brevo).
+        """
+        return await self._post(f"/facturacion/ordenes/{order_id}/reenviar-correo")
+
+    @retry(
+        stop=stop_after_attempt(3), 
+        wait=wait_exponential(multiplier=1, min=2, max=10),
+        before_sleep=before_sleep_log(logger, logging.WARNING),
+        reraise=True
+    )
+    async def sync_cotizaciones(self, fecha_desde: str, fecha_hasta: str):
+        """
+        Solicita a la API principal la carga de cotizaciones por rango de fechas.
+        """
+        payload = {
+            "fecha_desde": fecha_desde,
+            "fecha_hasta": fecha_hasta
+        }
+        return await self._post("/comercial/cotizaciones/cargar-rango", json=payload)

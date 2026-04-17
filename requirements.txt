@@ -6,3 +6,6 @@ pydantic>=2.6.4
 fastapi>=0.110.0
 uvicorn>=0.29.0
 tenacity>=8.4.1
+mysql-connector-python>=8.4.0
+gspread>=5.10.0
+google-auth>=2.22.0
