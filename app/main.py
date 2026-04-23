@@ -35,7 +35,7 @@ async def run_scheduler():
     scheduler.add_job(scheduler_tasks.send_emails_task, 'interval', minutes=settings.INTERVAL_SYNC_EMAILS, id='send_emails')
     scheduler.add_job(scheduler_tasks.sync_woo_recent_task, 'interval', minutes=settings.INTERVAL_SYNC_WOO_RECENT, id='sync_woo_recent')
     scheduler.add_job(scheduler_tasks.sync_sap_retiros_task, 'interval', minutes=settings.INTERVAL_SYNC_RETIROS, id='sync_sap_retiros')
-    scheduler.add_job(scheduler_tasks.sync_cotizaciones_task, 'interval', minutes=settings.INTERVAL_SYNC_COTIZACIONES, id='sync_cotizaciones')
+    scheduler.add_job(scheduler_tasks.sync_ventas_margen_task, 'interval', minutes=settings.INTERVAL_SYNC_VENTAS_MARGEN, id='sync_ventas_margen')
     
     scheduler.start()
     logger.info("Tareas programadas y scheduler activo.")

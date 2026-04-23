@@ -127,12 +127,12 @@ class APIClient:
         before_sleep=before_sleep_log(logger, logging.WARNING),
         reraise=True
     )
-    async def sync_cotizaciones(self, fecha_desde: str, fecha_hasta: str):
+    async def sync_ventas_margen(self, fecha_desde: str, fecha_hasta: str):
         """
-        Solicita a la API principal la carga de cotizaciones por rango de fechas.
+        Solicita a la API principal la carga de ventas con margen por rango de fechas.
         """
         payload = {
             "fecha_desde": fecha_desde,
             "fecha_hasta": fecha_hasta
         }
-        return await self._post("/comercial/cotizaciones/cargar-rango", json=payload)
+        return await self._post("/comercial/ventas-con-margen", json=payload)

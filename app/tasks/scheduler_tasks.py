@@ -63,15 +63,15 @@ async def sync_woo_recent_task():
     except Exception as e:
         logger.error(f"Fallo sincronización masiva WooCommerce: {e}")
 
-async def sync_cotizaciones_task():
+async def sync_ventas_margen_task():
     """
-    Tarea programada para cargar cotizaciones del día actual desde SAP.
+    Tarea programada para cargar ventas con margen del día actual desde SAP.
     """
-    hoy = datetime.now().strftime("%Y-%m-%d")
-    logger.info(f"Iniciando carga de cotizaciones para el día {hoy}...")
+    hoy = datetime.now().strftime("%d-%m-%Y")
+    logger.info(f"Iniciando carga de ventas con margen para el día {hoy}...")
     try:
-        result = await client.sync_cotizaciones(fecha_desde=hoy, fecha_hasta=hoy)
+        result = await client.sync_ventas_margen(fecha_desde=hoy, fecha_hasta=hoy)
         total = result.get('total_procesados', 0)
-        logger.info(f"[Cotizaciones] Sync completado. Procesadas: {total}")
+        logger.info(f"[Ventas-Margen] Sync completado. Procesadas: {total}")
     except Exception as e:
-        logger.error(f"Fallo carga de cotizaciones: {e}")
+        logger.error(f"Fallo carga de ventas con margen: {e}")
