@@ -33,6 +33,7 @@ async def run_scheduler():
     scheduler.add_job(scheduler_tasks.sync_stocks_task, 'interval', minutes=settings.INTERVAL_SYNC_STOCKS, id='sync_stocks')
     scheduler.add_job(scheduler_tasks.sync_backorders_task, 'interval', minutes=settings.INTERVAL_SYNC_STOCKS, id='sync_backorders')
     scheduler.add_job(scheduler_tasks.sync_ventas_margen_task, 'interval', minutes=settings.INTERVAL_SYNC_VENTAS_MARGEN, id='sync_ventas_margen')
+    scheduler.add_job(scheduler_tasks.sync_pipeline_task, 'interval', minutes=settings.INTERVAL_SYNC_PIPELINE, id='sync_pipeline')
     
     scheduler.start()
     logger.info("Tareas programadas y scheduler activo.")

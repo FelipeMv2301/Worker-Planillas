@@ -15,14 +15,14 @@ class APIClient:
         self.base_url = settings.full_api_url
         self.timeout = httpx.Timeout(120.0, connect=10.0)
 
-    async def _post(self, endpoint: str, json: dict = None):
+    async def _post(self, endpoint: str, json: dict = None, params: dict = None):
         """
         Realiza una petición POST asíncrona al endpoint especificado.
         """
         url = f"{self.base_url.rstrip('/')}/{endpoint.lstrip('/')}"
         async with httpx.AsyncClient(timeout=self.timeout) as client:
             try:
-                response = await client.post(url, json=json)
+                response = await client.post(url, json=json, params=params)
                 response.raise_for_status()
                 return response.json()
             except httpx.HTTPStatusError as e:
@@ -85,6 +85,22 @@ class APIClient:
         Delega a la API-Planillas-1 el envío del correo de notificación de facturación (Brevo).
         """
         return await self._post(f"/facturacion/ordenes/{order_id}/reenviar-correo")
+
+    @retry(
+        stop=stop_after_attempt(3), 
+        wait=wait_exponential(multiplier=1, min=2, max=10),
+        before_sleep=before_sleep_log(logger, logging.WARNING),
+        reraise=True
+    )
+    async def sync_pipeline(self, fecha_desde: str, fecha_hasta: str):
+        """
+        Solicita a la API principal la sincronización del Pipeline Comercial.
+        """
+        params = {
+            "fecha_desde": fecha_desde,
+            "fecha_hasta": fecha_hasta
+        }
+        return await self._post("/comercial/pipeline", params=params)
 
     @retry(
         stop=stop_after_attempt(3), 

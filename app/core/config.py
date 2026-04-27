@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     # Intervalos de tareas en minutos
     INTERVAL_SYNC_STOCKS: int = 60
     INTERVAL_SYNC_VENTAS_MARGEN: int = 1440
+    INTERVAL_SYNC_PIPELINE: int = 1440
     
     # Puertos (8080 es el estándar de DigitalOcean)
     WORKER_PORT: int = 8080

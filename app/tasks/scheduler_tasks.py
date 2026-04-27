@@ -45,3 +45,19 @@ async def sync_ventas_margen_task():
         logger.info(f"[Ventas-Margen] Finalizado. Registros procesados: {total}")
     except Exception as e:
         logger.error(f"[Ventas-Margen] Falló la sincronización: {e}")
+
+async def sync_pipeline_task():
+    """
+    Tarea programada para sincronizar el Pipeline Comercial (ayer y hoy).
+    """
+    ahora = datetime.now()
+    hoy = ahora.strftime("%d-%m-%Y")
+    ayer = (ahora - timedelta(days=1)).strftime("%d-%m-%Y")
+
+    logger.info(f"[Pipeline] Iniciando sincronización para el rango: {ayer} al {hoy}...")
+    try:
+        result = await client.sync_pipeline(fecha_desde=ayer, fecha_hasta=hoy)
+        total = result.get('total_procesados', 0)
+        logger.info(f"[Pipeline] Finalizado. Cotizaciones sincronizadas: {total}")
+    except Exception as e:
+        logger.error(f"[Pipeline] Falló la sincronización: {e}")
