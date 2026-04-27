@@ -73,41 +73,6 @@ class APIClient:
         """
         return await self._post("/visualizador-stock/sync-backorders")
 
-    @retry(
-        stop=stop_after_attempt(3), 
-        wait=wait_exponential(multiplier=1, min=2, max=10),
-        before_sleep=before_sleep_log(logger, logging.WARNING),
-        reraise=True
-    )
-    async def send_emails(self):
-        """
-        Inicia la revisión de la planilla y el envío de correos autorizados.
-        """
-        return await self._post("/notificaciones-despacho/sheets/revisar-correos")
-
-    @retry(
-        stop=stop_after_attempt(3), 
-        wait=wait_exponential(multiplier=1, min=2, max=10),
-        before_sleep=before_sleep_log(logger, logging.WARNING),
-        reraise=True
-    )
-    async def sync_sap_retiros(self):
-        """
-        Sincroniza las órdenes de retiro en tienda desde ayer con Google Sheets.
-        """
-        return await self._post("/notificaciones-despacho/sap/sincronizar/retiros-hoy")
-
-    @retry(
-        stop=stop_after_attempt(3), 
-        wait=wait_exponential(multiplier=1, min=2, max=10),
-        before_sleep=before_sleep_log(logger, logging.WARNING),
-        reraise=True
-    )
-    async def sync_woo_recent(self, dias: int):
-        """
-        Inicia la sincronización masiva de pedidos recientes desde WooCommerce.
-        """
-        return await self._get("/notificaciones-despacho/woocommerce/sincronizar", params={"dias": dias})
 
     @retry(
         stop=stop_after_attempt(3), 

@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from app.services.api_client import APIClient
 from app.core.config import get_settings
 
@@ -29,49 +29,19 @@ async def sync_backorders_task():
     except Exception as e:
         logger.error(f"Fallo sincronización de backorders: {e}")
 
-async def send_emails_task():
-    """
-    Tarea programada para revisar la planilla y disparar correos autorizados.
-    """
-    logger.info("Iniciando revisión y envío de correos...")
-    try:
-        result = await client.send_emails()
-        logger.info(f"[Correos] {result.get('detalle', 'Revision en segundo plano lanzada.')}")
-    except Exception as e:
-        logger.error(f"Fallo envío de correos: {e}")
-
-async def sync_sap_retiros_task():
-    """
-    Tarea programada para sincronizar retiros en tienda de SAP hacia la planilla.
-    """
-    logger.info("Iniciando sincronización de retiros SAP...")
-    try:
-        result = await client.sync_sap_retiros()
-        logger.info(f"[SAP Retiros] Sincronización completada.")
-    except Exception as e:
-        logger.error(f"Fallo sincronización de retiros SAP: {e}")
-
-async def sync_woo_recent_task():
-    """
-    Tarea programada para la sincronización masiva periódica de WooCommerce.
-    """
-    logger.info(f"Iniciando sincronización de WooCommerce (ultimos {settings.WOO_SYNC_DAYS} días)...")
-    try:
-        result = await client.sync_woo_recent(dias=settings.WOO_SYNC_DAYS)
-        total = result.get('total_procesados', 0)
-        logger.info(f"[Woo] Sincronización masiva terminada. Procesados: {total}")
-    except Exception as e:
-        logger.error(f"Fallo sincronización masiva WooCommerce: {e}")
 
 async def sync_ventas_margen_task():
     """
-    Tarea programada para cargar ventas con margen del día actual desde SAP.
+    Tarea programada para cargar ventas con margen (ayer y hoy) desde SAP.
     """
-    hoy = datetime.now().strftime("%d-%m-%Y")
-    logger.info(f"Iniciando carga de ventas con margen para el día {hoy}...")
+    ahora = datetime.now()
+    hoy = ahora.strftime("%d-%m-%Y")
+    ayer = (ahora - timedelta(days=1)).strftime("%d-%m-%Y")
+
+    logger.info(f"[Ventas-Margen] Iniciando sincronización para el rango: {ayer} al {hoy}...")
     try:
-        result = await client.sync_ventas_margen(fecha_desde=hoy, fecha_hasta=hoy)
+        result = await client.sync_ventas_margen(fecha_desde=ayer, fecha_hasta=hoy)
         total = result.get('total_procesados', 0)
-        logger.info(f"[Ventas-Margen] Sync completado. Procesadas: {total}")
+        logger.info(f"[Ventas-Margen] Finalizado. Registros procesados: {total}")
     except Exception as e:
-        logger.error(f"Fallo carga de ventas con margen: {e}")
+        logger.error(f"[Ventas-Margen] Falló la sincronización: {e}")

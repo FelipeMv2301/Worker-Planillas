@@ -10,18 +10,11 @@ class Settings(BaseSettings):
     API_VERSION: str = "v1"
     
     # Intervalos de tareas en minutos
-    INTERVAL_SYNC_STOCKS: int 
-    INTERVAL_SYNC_EMAILS: int
-    INTERVAL_SYNC_WOO_RECENT: int 
-    INTERVAL_SYNC_RETIROS: int 
-    INTERVAL_SYNC_VENTAS_MARGEN: int 
+    INTERVAL_SYNC_STOCKS: int = 60
+    INTERVAL_SYNC_VENTAS_MARGEN: int = 1440
     
-    # Parámetros extra
-    WOO_SYNC_DAYS: int
-   
-    #Puertos (8080 es el estándar de DigitalOcean)
-    WORKER_PORT: int 
-
+    # Puertos (8080 es el estándar de DigitalOcean)
+    WORKER_PORT: int = 8080
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     @property
