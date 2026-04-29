@@ -108,6 +108,22 @@ class APIClient:
         before_sleep=before_sleep_log(logger, logging.WARNING),
         reraise=True
     )
+    async def sync_guias_abiertas(self, fecha_desde: str, fecha_hasta: str):
+        """
+        Solicita a la API principal la sincronización de guías abiertas de contabilidad.
+        """
+        params = {
+            "fecha_desde": fecha_desde,
+            "fecha_hasta": fecha_hasta
+        }
+        return await self._post("/contabilidad/guias-abiertas/sincronizar", params=params)
+
+    @retry(
+        stop=stop_after_attempt(3), 
+        wait=wait_exponential(multiplier=1, min=2, max=10),
+        before_sleep=before_sleep_log(logger, logging.WARNING),
+        reraise=True
+    )
     async def sync_ventas_margen(self, fecha_desde: str, fecha_hasta: str):
         """
         Solicita a la API principal la carga de ventas con margen por rango de fechas.

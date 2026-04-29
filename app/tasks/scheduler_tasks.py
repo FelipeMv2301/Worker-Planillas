@@ -61,3 +61,19 @@ async def sync_pipeline_task():
         logger.info(f"[Pipeline] Finalizado. Cotizaciones sincronizadas: {total}")
     except Exception as e:
         logger.error(f"[Pipeline] Falló la sincronización: {e}")
+
+async def sync_guias_abiertas_task():
+    """
+    Tarea programada para sincronizar las Guías Abiertas de Contabilidad (ayer y hoy).
+    """
+    ahora = datetime.now()
+    hoy = ahora.strftime("%Y-%m-%d")
+    ayer = (ahora - timedelta(days=1)).strftime("%Y-%m-%d")
+
+    logger.info(f"[Guias-Abiertas] Iniciando sincronización para el rango: {ayer} al {hoy}...")
+    try:
+        result = await client.sync_guias_abiertas(fecha_desde=ayer, fecha_hasta=hoy)
+        total = result.get('total_extraidas', 0)
+        logger.info(f"[Guias-Abiertas] Finalizado. Guías procesadas: {total}")
+    except Exception as e:
+        logger.error(f"[Guias-Abiertas] Falló la sincronización: {e}")
