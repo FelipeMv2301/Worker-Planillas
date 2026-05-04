@@ -4,6 +4,7 @@ FROM python:3.10-slim
 # Evitar generación de archivos .pyc y habilitar salida de buffer
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
+ENV TZ="America/Santiago"
 
 # Directorio de trabajo
 WORKDIR /app

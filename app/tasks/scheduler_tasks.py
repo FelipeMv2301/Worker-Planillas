@@ -52,7 +52,7 @@ async def sync_pipeline_task():
     """
     ahora = datetime.now()
     hoy = ahora.strftime("%d-%m-%Y")
-    ayer = (ahora - timedelta(days=1)).strftime("%d-%m-%Y")
+    ayer = (ahora - timedelta(days=30)).strftime("%d-%m-%Y")
 
     logger.info(f"[Pipeline] Iniciando sincronización para el rango: {ayer} al {hoy}...")
     try:
