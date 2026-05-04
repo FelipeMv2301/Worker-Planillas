@@ -68,7 +68,7 @@ async def sync_guias_abiertas_task():
     """
     ahora = datetime.now()
     hoy = ahora.strftime("%Y-%m-%d")
-    ayer = (ahora - timedelta(days=1)).strftime("%Y-%m-%d")
+    ayer = (ahora - timedelta(days=30)).strftime("%Y-%m-%d")
 
     logger.info(f"[Guias-Abiertas] Iniciando sincronización para el rango: {ayer} al {hoy}...")
     try:
