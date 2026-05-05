@@ -32,8 +32,25 @@ async def run_scheduler():
     # Programar tareas
     scheduler.add_job(scheduler_tasks.sync_stocks_task, 'interval', minutes=settings.INTERVAL_SYNC_STOCKS, id='sync_stocks')
     scheduler.add_job(scheduler_tasks.sync_backorders_task, 'interval', minutes=settings.INTERVAL_SYNC_STOCKS, id='sync_backorders')
-    scheduler.add_job(scheduler_tasks.sync_ventas_margen_task, 'interval', minutes=settings.INTERVAL_SYNC_VENTAS_MARGEN, id='sync_ventas_margen')
-    scheduler.add_job(scheduler_tasks.sync_pipeline_task, 'interval', minutes=settings.INTERVAL_SYNC_PIPELINE, id='sync_pipeline')
+    
+    # --- VENTAS CON MARGEN ---
+    # 1. Sincronización Rápida (Ayer y Hoy): Mantiene la planilla al día.
+    scheduler.add_job(scheduler_tasks.sync_ventas_margen_task, 'interval', minutes=settings.INTERVAL_SYNC_VENTAS_MARGEN, id='sync_ventas_margen_rapido')
+    
+    # 2. Revisión Profunda (60 Días): Captura anulaciones y cambios antiguos.
+    # Programada a las 08:00, 14:00 y 16:30
+    scheduler.add_job(scheduler_tasks.sync_ventas_margen_deep_task, 'cron', hour='8,14', minute=0, id='sync_ventas_deep_8_14')
+    scheduler.add_job(scheduler_tasks.sync_ventas_margen_deep_task, 'cron', hour='16', minute=30, id='sync_ventas_deep_16_30')
+    
+    # --- PIPELINE COMERCIAL ---
+    # 1. Sincronización Rápida (Solo Hoy): Mantiene la planilla al día con registros nuevos.
+    scheduler.add_job(scheduler_tasks.sync_pipeline_hoy_task, 'interval', minutes=settings.INTERVAL_SYNC_PIPELINE, id='sync_pipeline_rapido')
+    
+    # 2. Revisión Profunda (60 Días): Corrige estados y valores de cotizaciones antiguas.
+    scheduler.add_job(scheduler_tasks.sync_pipeline_task, 'cron', hour='8,14', minute=0, id='sync_pipeline_profundo_8_14')
+    scheduler.add_job(scheduler_tasks.sync_pipeline_task, 'cron', hour='16', minute=30, id='sync_pipeline_profundo_16_30')
+    
+    # Guías Abiertas (Contabilidad)
     scheduler.add_job(scheduler_tasks.sync_guias_abiertas_task, 'cron', hour='8,15', minute=0, id='sync_guias_abiertas')
     
     scheduler.start()

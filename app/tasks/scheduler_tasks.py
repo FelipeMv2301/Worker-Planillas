@@ -32,35 +32,69 @@ async def sync_backorders_task():
 
 async def sync_ventas_margen_task():
     """
-    Tarea programada para cargar ventas con margen (ayer y hoy) desde SAP.
+    Tarea programada para cargar ventas con margen (SOLO AYER Y HOY).
+    Sincronización rápida frecuente.
     """
     ahora = datetime.now()
     hoy = ahora.strftime("%d-%m-%Y")
     ayer = (ahora - timedelta(days=1)).strftime("%d-%m-%Y")
 
-    logger.info(f"[Ventas-Margen] Iniciando sincronización para el rango: {ayer} al {hoy}...")
+    logger.info(f"[Ventas-Hoy] Sincronización rápida: {ayer} al {hoy}...")
     try:
         result = await client.sync_ventas_margen(fecha_desde=ayer, fecha_hasta=hoy)
         total = result.get('total_procesados', 0)
-        logger.info(f"[Ventas-Margen] Finalizado. Registros procesados: {total}")
+        logger.info(f"[Ventas-Hoy] Finalizado. Registros procesados: {total}")
     except Exception as e:
-        logger.error(f"[Ventas-Margen] Falló la sincronización: {e}")
+        logger.error(f"[Ventas-Hoy] Falló la sincronización rápida: {e}")
 
-async def sync_pipeline_task():
+async def sync_ventas_margen_deep_task():
     """
-    Tarea programada para sincronizar el Pipeline Comercial (60 días).
+    Tarea programada para cargar ventas con margen (REVISIÓN PROFUNDA: 60 DÍAS).
+    Se ejecuta pocas veces al día para capturar anulaciones o cambios antiguos.
     """
     ahora = datetime.now()
     hoy = ahora.strftime("%d-%m-%Y")
-    ayer = (ahora - timedelta(days=60)).strftime("%d-%m-%Y")
+    desde = (ahora - timedelta(days=60)).strftime("%d-%m-%Y")
 
-    logger.info(f"[Pipeline] Iniciando sincronización para el rango: {ayer} al {hoy}...")
+    logger.info(f"[Ventas-60D] Iniciando revisión profunda: {desde} al {hoy}...")
     try:
-        result = await client.sync_pipeline(fecha_desde=ayer, fecha_hasta=hoy)
+        result = await client.sync_ventas_margen(fecha_desde=desde, fecha_hasta=hoy)
         total = result.get('total_procesados', 0)
-        logger.info(f"[Pipeline] Finalizado. Cotizaciones sincronizadas: {total}")
+        logger.info(f"[Ventas-60D] Finalizado. Registros actualizados: {total}")
     except Exception as e:
-        logger.error(f"[Pipeline] Falló la sincronización: {e}")
+        logger.error(f"[Ventas-60D] Falló la revisión profunda: {e}")
+
+async def sync_pipeline_task():
+    """
+    Tarea programada para sincronizar el Pipeline Comercial (REVISIÓN PROFUNDA: 60 días).
+    Se ejecuta pocas veces al día para corregir estados de cotizaciones antiguas.
+    """
+    ahora = datetime.now()
+    hoy = ahora.strftime("%d-%m-%Y")
+    desde = (ahora - timedelta(days=60)).strftime("%d-%m-%Y")
+
+    logger.info(f"[Pipeline-60D] Iniciando revisión profunda: {desde} al {hoy}...")
+    try:
+        result = await client.sync_pipeline(fecha_desde=desde, fecha_hasta=hoy)
+        total = result.get('total_procesados', 0)
+        logger.info(f"[Pipeline-60D] Finalizado. Cotizaciones actualizadas: {total}")
+    except Exception as e:
+        logger.error(f"[Pipeline-60D] Falló la revisión profunda: {e}")
+
+async def sync_pipeline_hoy_task():
+    """
+    Tarea programada para sincronizar el Pipeline Comercial (SOLO HOY).
+    Se ejecuta frecuentemente para capturar nuevas cotizaciones al instante.
+    """
+    hoy = datetime.now().strftime("%d-%m-%Y")
+
+    logger.info(f"[Pipeline-Hoy] Sincronizando cotizaciones del día: {hoy}...")
+    try:
+        result = await client.sync_pipeline(fecha_desde=hoy, fecha_hasta=hoy)
+        total = result.get('total_procesados', 0)
+        logger.info(f"[Pipeline-Hoy] Finalizado. Nuevos registros: {total}")
+    except Exception as e:
+        logger.error(f"[Pipeline-Hoy] Falló la sincronización rápida: {e}")
 
 async def sync_guias_abiertas_task():
     """
