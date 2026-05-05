@@ -48,11 +48,11 @@ async def sync_ventas_margen_task():
 
 async def sync_pipeline_task():
     """
-    Tarea programada para sincronizar el Pipeline Comercial (ayer y hoy).
+    Tarea programada para sincronizar el Pipeline Comercial (60 días).
     """
     ahora = datetime.now()
     hoy = ahora.strftime("%d-%m-%Y")
-    ayer = (ahora - timedelta(days=30)).strftime("%d-%m-%Y")
+    ayer = (ahora - timedelta(days=60)).strftime("%d-%m-%Y")
 
     logger.info(f"[Pipeline] Iniciando sincronización para el rango: {ayer} al {hoy}...")
     try:
@@ -64,7 +64,7 @@ async def sync_pipeline_task():
 
 async def sync_guias_abiertas_task():
     """
-    Tarea programada para sincronizar las Guías Abiertas de Contabilidad (ayer y hoy).
+    Tarea programada para sincronizar las Guías Abiertas de Contabilidad (30 días).
     """
     ahora = datetime.now()
     hoy = ahora.strftime("%Y-%m-%d")
