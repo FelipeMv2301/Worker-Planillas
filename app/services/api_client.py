@@ -128,8 +128,8 @@ class APIClient:
         """
         Solicita a la API principal la carga de ventas con margen por rango de fechas.
         """
-        payload = {
+        params = {
             "fecha_desde": fecha_desde,
             "fecha_hasta": fecha_hasta
         }
-        return await self._post("/comercial/ventas-con-margen", json=payload)
+        return await self._post("/comercial/ventas-con-margen", params=params)
