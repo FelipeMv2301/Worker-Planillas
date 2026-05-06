@@ -13,7 +13,7 @@ class APIClient:
     def __init__(self):
         settings = get_settings()
         self.base_url = settings.full_api_url
-        self.timeout = httpx.Timeout(120.0, connect=10.0)
+        self.timeout = httpx.Timeout(300.0, connect=10.0)
 
     async def _post(self, endpoint: str, json: dict = None, params: dict = None):
         """
@@ -92,13 +92,14 @@ class APIClient:
         before_sleep=before_sleep_log(logger, logging.WARNING),
         reraise=True
     )
-    async def sync_pipeline(self, fecha_desde: str, fecha_hasta: str):
+    async def sync_pipeline(self, fecha_desde: str, fecha_hasta: str, background: bool = True):
         """
         Solicita a la API principal la sincronización del Pipeline Comercial.
         """
         params = {
             "fecha_desde": fecha_desde,
-            "fecha_hasta": fecha_hasta
+            "fecha_hasta": fecha_hasta,
+            "background": str(background).lower()
         }
         return await self._post("/comercial/pipeline", params=params)
 
@@ -108,13 +109,14 @@ class APIClient:
         before_sleep=before_sleep_log(logger, logging.WARNING),
         reraise=True
     )
-    async def sync_guias_abiertas(self, fecha_desde: str, fecha_hasta: str):
+    async def sync_guias_abiertas(self, fecha_desde: str, fecha_hasta: str, background: bool = True):
         """
         Solicita a la API principal la sincronización de guías abiertas de contabilidad.
         """
         params = {
             "fecha_desde": fecha_desde,
-            "fecha_hasta": fecha_hasta
+            "fecha_hasta": fecha_hasta,
+            "background": str(background).lower()
         }
         return await self._post("/contabilidad/guias-abiertas/sincronizar", params=params)
 
@@ -124,12 +126,13 @@ class APIClient:
         before_sleep=before_sleep_log(logger, logging.WARNING),
         reraise=True
     )
-    async def sync_ventas_margen(self, fecha_desde: str, fecha_hasta: str):
+    async def sync_ventas_margen(self, fecha_desde: str, fecha_hasta: str, background: bool = True):
         """
         Solicita a la API principal la carga de ventas con margen por rango de fechas.
         """
         params = {
             "fecha_desde": fecha_desde,
-            "fecha_hasta": fecha_hasta
+            "fecha_hasta": fecha_hasta,
+            "background": str(background).lower()
         }
         return await self._post("/comercial/ventas-con-margen", params=params)
