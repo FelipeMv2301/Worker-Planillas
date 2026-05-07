@@ -51,7 +51,10 @@ async def run_scheduler():
     scheduler.add_job(scheduler_tasks.sync_pipeline_task, 'cron', hour='16', minute=30, id='sync_pipeline_profundo_16_30')
     
     # Guías Abiertas (Contabilidad)
-    scheduler.add_job(scheduler_tasks.sync_guias_abiertas_task, 'cron', hour='8,15', minute=0, id='sync_guias_abiertas')
+    # 1. Sincronización rápida (Ayer y Hoy) cada X minutos (definido en .env)
+    scheduler.add_job(scheduler_tasks.sync_guias_abiertas_hoy_task, 'interval', minutes=settings.INTERVAL_SYNC_GUIAS, id='sync_guias_abiertas_hoy')
+    # 2. Sincronización profunda (30 días) a las 08:00 y 15:00
+    scheduler.add_job(scheduler_tasks.sync_guias_abiertas_deep_task, 'cron', hour='8,15', minute=0, id='sync_guias_abiertas_deep')
     
     # Gestor de Despachos (Logística)
     # 1. Sincronización rápida cada X minutos (definido en .env)

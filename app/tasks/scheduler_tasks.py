@@ -96,21 +96,39 @@ async def sync_pipeline_hoy_task():
     except Exception as e:
         logger.error(f"[Pipeline-Hoy] Falló la sincronización rápida: {e}")
 
-async def sync_guias_abiertas_task():
+async def sync_guias_abiertas_hoy_task():
     """
-    Tarea programada para sincronizar las Guías Abiertas de Contabilidad (30 días).
+    Tarea programada para sincronizar las Guías Abiertas (AYER Y HOY).
+    Sincronización rápida frecuente.
     """
     ahora = datetime.now()
-    hoy = ahora.strftime("%Y-%m-%d")
-    ayer = (ahora - timedelta(days=30)).strftime("%Y-%m-%d")
+    hoy = ahora.strftime("%d-%m-%Y")
+    ayer = (ahora - timedelta(days=1)).strftime("%d-%m-%Y")
 
-    logger.info(f"[Guias-Abiertas] Iniciando sincronización para el rango: {ayer} al {hoy}...")
+    logger.info(f"[Guias-Hoy] Sincronización rápida: {ayer} al {hoy}...")
     try:
         result = await client.sync_guias_abiertas(fecha_desde=ayer, fecha_hasta=hoy)
         total = result.get('total_extraidas', 0)
-        logger.info(f"[Guias-Abiertas] Finalizado. Guías procesadas: {total}")
+        logger.info(f"[Guias-Hoy] Finalizado. Guías procesadas: {total}")
     except Exception as e:
-        logger.error(f"[Guias-Abiertas] Falló la sincronización: {e}")
+        logger.error(f"[Guias-Hoy] Falló la sincronización rápida: {e}")
+
+async def sync_guias_abiertas_deep_task():
+    """
+    Tarea programada para sincronizar las Guías Abiertas (REVISIÓN PROFUNDA: 30 DÍAS).
+    Se ejecuta pocas veces al día.
+    """
+    ahora = datetime.now()
+    hoy = ahora.strftime("%d-%m-%Y")
+    desde = (ahora - timedelta(days=30)).strftime("%d-%m-%Y")
+
+    logger.info(f"[Guias-Deep] Iniciando revisión profunda: {desde} al {hoy}...")
+    try:
+        result = await client.sync_guias_abiertas(fecha_desde=desde, fecha_hasta=hoy)
+        total = result.get('total_extraidas', 0)
+        logger.info(f"[Guias-Deep] Finalizado. Guías actualizadas: {total}")
+    except Exception as e:
+        logger.error(f"[Guias-Deep] Falló la revisión profunda: {e}")
 
 async def sync_gestor_despachos_task():
     """
