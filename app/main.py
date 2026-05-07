@@ -53,6 +53,9 @@ async def run_scheduler():
     # Guías Abiertas (Contabilidad)
     scheduler.add_job(scheduler_tasks.sync_guias_abiertas_task, 'cron', hour='8,15', minute=0, id='sync_guias_abiertas')
     
+    # Gestor de Despachos (Logística)
+    scheduler.add_job(scheduler_tasks.sync_gestor_despachos_task, 'interval', minutes=settings.INTERVAL_SYNC_GESTOR, id='sync_gestor_despachos')
+
     scheduler.start()
     logger.info("Tareas programadas y scheduler activo.")
     

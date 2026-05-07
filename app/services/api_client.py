@@ -92,7 +92,7 @@ class APIClient:
         before_sleep=before_sleep_log(logger, logging.WARNING),
         reraise=True
     )
-    async def sync_pipeline(self, fecha_desde: str, fecha_hasta: str, background: bool = True):
+    async def sync_pipeline(self, fecha_desde: str, fecha_hasta: str, background: bool = False):
         """
         Solicita a la API principal la sincronización del Pipeline Comercial.
         """
@@ -109,7 +109,7 @@ class APIClient:
         before_sleep=before_sleep_log(logger, logging.WARNING),
         reraise=True
     )
-    async def sync_guias_abiertas(self, fecha_desde: str, fecha_hasta: str, background: bool = True):
+    async def sync_guias_abiertas(self, fecha_desde: str, fecha_hasta: str, background: bool = False):
         """
         Solicita a la API principal la sincronización de guías abiertas de contabilidad.
         """
@@ -126,7 +126,7 @@ class APIClient:
         before_sleep=before_sleep_log(logger, logging.WARNING),
         reraise=True
     )
-    async def sync_ventas_margen(self, fecha_desde: str, fecha_hasta: str, background: bool = True):
+    async def sync_ventas_margen(self, fecha_desde: str, fecha_hasta: str, background: bool = False):
         """
         Solicita a la API principal la carga de ventas con margen por rango de fechas.
         """
@@ -136,3 +136,18 @@ class APIClient:
             "background": str(background).lower()
         }
         return await self._post("/comercial/ventas-con-margen", params=params)
+
+    @retry(
+        stop=stop_after_attempt(3), 
+        wait=wait_exponential(multiplier=1, min=2, max=10),
+        before_sleep=before_sleep_log(logger, logging.WARNING),
+        reraise=True
+    )
+    async def sync_gestor_despachos(self, fecha_desde: str = None, fecha_hasta: str = None):
+        """
+        Solicita la sincronización masiva de pedidos de despacho/retiro.
+        """
+        params = {}
+        if fecha_desde: params["fecha_desde"] = fecha_desde
+        if fecha_hasta: params["fecha_hasta"] = fecha_hasta
+        return await self._post("/gestor-despachos/sincronizar", params=params)

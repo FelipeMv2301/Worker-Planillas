@@ -111,3 +111,19 @@ async def sync_guias_abiertas_task():
         logger.info(f"[Guias-Abiertas] Finalizado. Guías procesadas: {total}")
     except Exception as e:
         logger.error(f"[Guias-Abiertas] Falló la sincronización: {e}")
+
+async def sync_gestor_despachos_task():
+    """
+    Tarea programada para sincronizar el Gestor de Despachos (últimos 7 días).
+    """
+    ahora = datetime.now()
+    hoy = ahora.strftime("%d-%m-%Y")
+    desde = (ahora - timedelta(days=7)).strftime("%d-%m-%Y")
+
+    logger.info(f"[Gestor-Despachos] Iniciando sincronización masiva: {desde} al {hoy}...")
+    try:
+        result = await client.sync_gestor_despachos(fecha_desde=desde, fecha_hasta=hoy)
+        total = result.get('total_procesados', 0)
+        logger.info(f"[Gestor-Despachos] Finalizado. Registros sincronizados: {total}")
+    except Exception as e:
+        logger.error(f"[Gestor-Despachos] Falló la sincronización: {e}")
