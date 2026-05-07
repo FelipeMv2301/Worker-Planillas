@@ -54,7 +54,11 @@ async def run_scheduler():
     scheduler.add_job(scheduler_tasks.sync_guias_abiertas_task, 'cron', hour='8,15', minute=0, id='sync_guias_abiertas')
     
     # Gestor de Despachos (Logística)
-    scheduler.add_job(scheduler_tasks.sync_gestor_despachos_task, 'interval', minutes=settings.INTERVAL_SYNC_GESTOR, id='sync_gestor_despachos')
+    # 1. Sincronización rápida cada X minutos (definido en .env)
+    scheduler.add_job(scheduler_tasks.sync_gestor_despachos_task, 'interval', minutes=settings.INTERVAL_SYNC_GESTOR, id='sync_gestor_despachos_interval')
+    
+    # 2. Sincronización profunda (Una semana atrás) a las 08:00 y 14:00
+    scheduler.add_job(scheduler_tasks.sync_gestor_despachos_task, 'cron', hour='8,14', minute=0, id='sync_gestor_despachos_cron_8_14')
 
     scheduler.start()
     logger.info("Tareas programadas y scheduler activo.")
