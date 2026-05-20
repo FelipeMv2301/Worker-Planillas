@@ -138,7 +138,21 @@ class APIClient:
         return await self._post("/comercial/ventas-con-margen", params=params)
 
     @retry(
-        stop=stop_after_attempt(3), 
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=2, max=10),
+        before_sleep=before_sleep_log(logger, logging.WARNING),
+        reraise=True
+    )
+    async def refrescar_pipeline_abiertos(self, background: bool = False):
+        """
+        Solicita a la API principal el refresco de estados de cotizaciones 'Abierto',
+        sin importar su fecha de creación.
+        """
+        params = {"background": str(background).lower()}
+        return await self._post("/comercial/pipeline/refrescar-abiertos", params=params)
+
+    @retry(
+        stop=stop_after_attempt(3),
         wait=wait_exponential(multiplier=1, min=2, max=10),
         before_sleep=before_sleep_log(logger, logging.WARNING),
         reraise=True

@@ -130,6 +130,19 @@ async def sync_guias_abiertas_deep_task():
     except Exception as e:
         logger.error(f"[Guias-Deep] Falló la revisión profunda: {e}")
 
+async def refrescar_pipeline_abiertos_task():
+    """
+    Tarea programada para refrescar el estado de cotizaciones 'Abierto' en el Pipeline,
+    sin importar su fecha de creación. Complementa la revisión profunda de 60 días.
+    """
+    logger.info("[Pipeline-Abiertos] Iniciando refresco de estados de cotizaciones abiertas...")
+    try:
+        result = await client.refrescar_pipeline_abiertos()
+        total = result.get('total_procesados', 0)
+        logger.info(f"[Pipeline-Abiertos] Finalizado. Cotizaciones actualizadas: {total}")
+    except Exception as e:
+        logger.error(f"[Pipeline-Abiertos] Falló el refresco: {e}")
+
 async def sync_gestor_despachos_task():
     """
     Tarea programada para sincronizar el Gestor de Despachos (últimos 7 días).

@@ -49,6 +49,11 @@ async def run_scheduler():
     # 2. Revisión Profunda (60 Días): Corrige estados y valores de cotizaciones antiguas.
     scheduler.add_job(scheduler_tasks.sync_pipeline_task, 'cron', hour='8,14', minute=0, id='sync_pipeline_profundo_8_14')
     scheduler.add_job(scheduler_tasks.sync_pipeline_task, 'cron', hour='16', minute=30, id='sync_pipeline_profundo_16_30')
+
+    # 3. Refresco de Abiertos (Sin límite de fecha): Actualiza estados de cotizaciones
+    #    antiguas que siguen como 'Abierto' sin importar cuándo fueron creadas.
+    #    Cada 20 min mantiene la sesión SAP caliente, reduciendo cada ejecución a ~3s.
+    scheduler.add_job(scheduler_tasks.refrescar_pipeline_abiertos_task, 'interval', minutes=settings.INTERVAL_REFRESCAR_PIPELINE_ABIERTOS, id='sync_pipeline_refrescar_abiertos')
     
     # Guías Abiertas (Contabilidad)
     # 1. Sincronización rápida (Ayer y Hoy) cada X minutos (definido en .env)

@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     INTERVAL_SYNC_PIPELINE: int = 720
     INTERVAL_SYNC_GUIAS_ABIERTAS: int = 1440
     INTERVAL_SYNC_GESTOR: int = 60
+    INTERVAL_REFRESCAR_PIPELINE_ABIERTOS: int = 20
     
     # Puertos (8080 es el estándar de DigitalOcean)
     WORKER_PORT: int = 8080
