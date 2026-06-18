@@ -1,10 +1,12 @@
 import logging
 from datetime import datetime, timedelta
 from app.services.api_client import APIClient
+from app.services.integraciones_bq_client import IntegracionesBQ
 from app.core.config import get_settings
 
 logger = logging.getLogger("SchedulerTasks")
 client = APIClient()
+client_integraciones_bq = IntegracionesBQ()
 settings = get_settings()
 
 async def sync_stocks_task():
@@ -158,3 +160,12 @@ async def sync_gestor_despachos_task():
         logger.info(f"[Gestor-Despachos] Finalizado. Registros sincronizados: {total}")
     except Exception as e:
         logger.error(f"[Gestor-Despachos] Falló la sincronización: {e}")
+
+async def sync_stock_integraciones_bq():
+    logger.info("Inciando sync desde Integraciones-BQ")
+
+    try:
+        result = await client_integraciones_bq.sync_stock_integraciones_bq()
+        logger.info(f"[Stocks] {result.get('mensaje', 'Exito')}")
+    except Exception as e:
+        logger.error(f"Fallo sincronización de stocks: {e}")

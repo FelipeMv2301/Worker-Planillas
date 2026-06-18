@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     Valida que los tipos sean correctos al arrancar la aplicación.
     """
     API_BASE_URL: str
+    INTEGRACIONES_BQ_BASE_URL: str
     API_VERSION: str = "v1"
     
     # Intervalos de tareas en minutos
@@ -17,6 +18,9 @@ class Settings(BaseSettings):
     INTERVAL_SYNC_GUIAS_ABIERTAS: int = 1440
     INTERVAL_SYNC_GESTOR: int = 60
     INTERVAL_REFRESCAR_PIPELINE_ABIERTOS: int = 20
+    INTERVAL_SYNC_INTEGRACIONES_BQ: int = 2
+
+    KEY_INTEGRACIONES_BQ: str
     
     # Puertos (8080 es el estándar de DigitalOcean)
     WORKER_PORT: int = 8080
@@ -28,6 +32,20 @@ class Settings(BaseSettings):
         Calcula la URL completa de la API combinando base y versión.
         """
         return f"{self.API_BASE_URL.rstrip('/')}/{self.API_VERSION}"
+    
+    @property
+    def full_integraciones_bq_url(self) -> str:
+        """
+        Calcula la URL completa de la API combinando base y versión.
+        """
+        return f"{self.INTEGRACIONES_BQ_BASE_URL.rstrip('/')}/v1"
+    
+    @property
+    def key_integraciones_bq(self) -> str:
+        """
+        Envía la key de integraciones_bq
+        """
+        return f"{self.KEY_INTEGRACIONES_BQ}"
 
 @lru_cache()
 def get_settings():

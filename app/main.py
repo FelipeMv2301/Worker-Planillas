@@ -68,6 +68,10 @@ async def run_scheduler():
     # 2. Sincronización profunda (Una semana atrás) a las 08:00 y 14:00
     scheduler.add_job(scheduler_tasks.sync_gestor_despachos_task, 'cron', hour='8,14', minute=0, id='sync_gestor_despachos_cron_8_14')
 
+    #STOCK de Integraciones-BQ (Reemplazará al otro)
+    # 1. Endpoint de SAP a DB de integraciones
+    scheduler.add_job(scheduler_tasks.sync_stock_integraciones_bq, 'interval', minutes=settings.INTERVAL_SYNC_INTEGRACIONES_BQ, id='sync_integraciones_bq_interval')
+
     scheduler.start()
     logger.info("Tareas programadas y scheduler activo.")
     
